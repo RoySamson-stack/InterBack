@@ -22,18 +22,21 @@ const server = https.createServer(function(req, res) {
 
   var fileName = urlObject.pathname.substring(1);
   if("POST " == method){
-    req.on('data', fucntion(chunk){
-      console.log(chunk);
+    var postData = "";
+    req.on("data", function(data) {
+      postData += data;
+    });
+    req.on("end", function() {
+      var postObject = JSON.parse(postData);
+      var postData = postObject.data;
+    });
+  }else{
+    fs.readFile(fileName, function(err){
+      res.writeHead(200, { "Content-Type": "text/html" , "Content-Length": "100"});
+      res.write("Success GET request");
+      res.end();
     })
   }
-
-
-  fs.readFile(fileName, function(err){
-    res.writeHead(200, { "Content-Type": "text/html" , "Content-Length": "100"});
-    res.write("Success GET request");
-    res.end();
-  })
- 
 })
 
 server.listen(port);
